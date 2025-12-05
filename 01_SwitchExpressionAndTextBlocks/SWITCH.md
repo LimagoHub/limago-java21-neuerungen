@@ -1,22 +1,22 @@
-Entwicklung der switch expressions von Java 11 bis Java 21
+# Entwicklung der *switch expressions* von Java 11 bis Java 21
 
-Die switch-Syntax hat sich von Java 11 bis Java 21 erheblich weiterentwickelt:
-von einer rein imperativen Kontrollstruktur hin zu einem modernen, ausdrucksstarken Pattern-Matching-Mechanismus.
+Die `switch`-Syntax hat sich zwischen Java 11 und Java 21 stark
+weiterentwickelt --- von einer rein imperativen Kontrollstruktur hin zu
+einem mächtigen Pattern-Matching-Mechanismus.
 
-Im Folgenden findest du die Entwicklung chronologisch, inklusive Beispielen und Kernänderungen — vollständig im Markdown-Format.
+------------------------------------------------------------------------
 
-Java 11 und älter – klassischer switch (nur Statement)
+## Java 11 und älter -- Klassischer `switch` (**nur Statement**)
 
-switch kann nur ein Statement sein, nie ein Ausdruck.
+**Eigenschaften:**
 
-Kein Rückgabewert möglich.
+-   `switch` ist **kein Ausdruck**, liefert also keinen Wert.
+-   **Fallthrough** ist Standard → `break` zwingend.
+-   Keine kompakten Case-Labels möglich.
 
-Fallthrough ist Standard → break zwingend notwendig.
+**Beispiel:**
 
-Mehrere Case-Labels nicht in einer Zeile nutzbar.
-
-Beispiel (Java 11):
-
+``` java
 int numLetters;
 switch (day) {
     case MONDAY:
@@ -30,74 +30,63 @@ switch (day) {
     default:
         numLetters = 8;
 }
+```
 
-Java 12 – switch expressions (Preview #1, JEP 325)
+------------------------------------------------------------------------
 
-Java 12 führt die switch-Expression testweise ein:
+## Java 12 -- Switch Expressions (Preview 1)
 
-🆕 Wichtige Neuerungen
+**Neuerungen:**
 
-switch kann Expression oder Statement sein.
+-   `switch` kann **Expression** sein.
+-   **Arrow-Cases** ohne Fallthrough.
+-   Mehrere Labels pro Case: `case A, B ->`
+-   Rückgabewerte direkt möglich.
+-   Blockarme nutzen noch `break value`.
 
-Neue Syntax: case A, B -> ohne Fallthrough.
+**Beispiel:**
 
-Ergebniswert kann direkt zugewiesen werden:
-
+``` java
 int numLetters = switch (day) {
     case MONDAY, FRIDAY, SUNDAY -> 6;
     case TUESDAY -> 7;
     default -> 8;
 };
+```
 
+------------------------------------------------------------------------
 
-In Block-Armen durfte man damals break value verwenden (nur in diesem Preview):
+## Java 13 -- Switch Expressions (Preview 2)
 
-int r = switch (day) {
-    case WEDNESDAY -> {
-        int len = day.toString().length();
-        break len;  // nur in Java 12!
-    }
-    default -> 0;
-};
+### Änderung:
 
+-   `break value` wird ersetzt durch **`yield`**.
 
-Nur mit --enable-preview nutzbar.
+**Beispiel:**
 
-Java 13 – switch expressions (Preview #2, JEP 354)
-
-Java 13 ersetzt break value durch yield, eine semantisch klarere Form.
-
-🆕 Wesentliche Änderung
-
-yield gibt den Wert einer switch-Expression aus einem Block zurück.
-
-Beispiel:
-
+``` java
 int result = switch (day) {
     case MONDAY -> 0;
     case TUESDAY -> 1;
     default -> {
         int temp = compute(day);
-        yield temp;   // ersetzt break value
+        yield temp;
     }
 };
+```
 
-Java 14 – switch expressions werden final (JEP 361)
+------------------------------------------------------------------------
 
-Ab Java 14 ist die Funktionalität Standardbestandteil der Sprache.
+## Java 14 -- Finalisierung der switch expressions
 
-✨ Was ist jetzt endgültig festgelegt?
+-   `switch` Expressions sind jetzt **offiziell Teil der Sprache**.
+-   Arrow-Syntax ist final.
+-   Blockarme nutzen zwingend `yield`.
+-   Expressions müssen exhaustiv sein.
 
-switch kann Expression oder Statement sein.
+**Beispiel:**
 
-Pfeil-Syntax case X -> ist voll unterstützt.
-
-Block-Arme verwenden immer yield, nie break value.
-
-switch-Expressions müssen exhaustiv sein (müssen alle Fälle abdecken).
-
-Beispiel (gültig ab Java 14, heute Standard):
-
+``` java
 int numLetters = switch (day) {
     case MONDAY, FRIDAY, SUNDAY -> 6;
     case TUESDAY -> 7;
@@ -107,34 +96,23 @@ int numLetters = switch (day) {
     }
     default -> 8;
 };
+```
 
+------------------------------------------------------------------------
 
-Java 14 schließt die grundlegende Modernisierung des switch ab.
-Spätere Versionen erweitern switch hauptsächlich durch Pattern Matching.
+## Java 17--20 -- Pattern Matching Previews
 
-Java 17–20 – Vorbereitung des Pattern Matching für switch (Preview-Phasen)
+-   Typ-Patterns in `switch`
+-   Record-Destructuring
+-   `when` Guards
 
-In diesen Versionen bleiben die switch expressions stabil, aber Java fügt neue Fähigkeiten hinzu:
+------------------------------------------------------------------------
 
-🧩 Neue Features in Previews
+## Java 21 -- Finales Pattern Matching for switch
 
-Typ-Patterns in switch (z. B. case String s ->)
+**Beispiel:**
 
-Guards (when-Klauseln)
-
-Umgang mit null in Pattern-Switches
-
-Diese Phasen sind rein vorbereitend für Java 21.
-
-Java 21 – Pattern Matching for switch wird final (JEP 441)
-
-Mit Java 21 wird das switch-System vollständig generalisiert:
-
-switch kann jetzt über Typen, Records und komplexe Patterns matchen.
-
-Ideal in Kombination mit sealed Klassen und Records.
-
-Beispiel (Java 21, final):
+``` java
 static String describe(Object obj) {
     return switch (obj) {
         case null -> "null";
@@ -145,10 +123,9 @@ static String describe(Object obj) {
         default -> "Unbekannter Typ";
     };
 }
+```
 
-
-Mit Records:
-
+``` java
 record Point(int x, int y) {}
 
 String desc = switch (p) {
@@ -156,3 +133,17 @@ String desc = switch (p) {
     case Point(int x, int y) -> "Point(" + x + "," + y + ")";
     default -> "Other";
 };
+```
+
+------------------------------------------------------------------------
+
+## Zusammenfassung
+
+  Java-Version   Status          Änderungen
+  -------------- --------------- --------------------------------------------------
+  11             Nur Statement   kein Wert, Fallthrough
+  12             Preview         erste Expressions, `case A, B ->`, `break value`
+  13             Preview         Einführung `yield`
+  14             Final           switch Expressions final
+  17--20         Preview         Pattern Matching
+  21             Final           Pattern Matching for switch
