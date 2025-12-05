@@ -147,3 +147,188 @@ String desc = switch (p) {
   14             Final           switch Expressions final
   17--20         Preview         Pattern Matching
   21             Final           Pattern Matching for switch
+
+  # Was kann alles in `case` verarbeitet werden? (Java 21)
+
+Hier findest du eine vollständige Übersicht darüber, was in Java 21 in
+`switch`-Case-Labels erlaubt ist -- inklusive klassischer Werte, neuer
+Pattern-Matching-Funktionen und aller syntaktischen Regeln.
+
+------------------------------------------------------------------------
+
+## 1. Konstante Werte (klassisch)
+
+`case` kann konstante Werte prüfen:
+
+-   Ganzzahlen (`int`, `byte`, `short`, `char`)
+-   `String`-Konstanten
+-   `enum`-Konstanten
+-   Compile-Time-Constant-Ausdrücke
+
+**Beispiel:**
+
+``` java
+switch (n) {
+    case 1:
+        ...
+    case 2:
+        ...
+    case 10 * 2:
+        ...
+}
+```
+
+------------------------------------------------------------------------
+
+## 2. Mehrere Werte pro Case
+
+Seit Java 12 möglich:
+
+``` java
+case MONDAY, FRIDAY, SUNDAY -> ...
+```
+
+------------------------------------------------------------------------
+
+## 3. Arrow-Cases (`->`)
+
+Moderne, fallthrough-freie Syntax:
+
+``` java
+case 1 -> "One";
+case 2 -> "Two";
+```
+
+------------------------------------------------------------------------
+
+## 4. default-Case
+
+Standardfall:
+
+``` java
+default -> "Unknown";
+```
+
+------------------------------------------------------------------------
+
+## 5. Type Patterns
+
+Java 21 erlaubt Typprüfungen im switch:
+
+``` java
+case String s -> "String: " + s;
+case Number n -> "Number: " + n;
+```
+
+------------------------------------------------------------------------
+
+## 6. Record Patterns
+
+Case kann Records entpacken:
+
+``` java
+record Point(int x, int y) {}
+case Point(int x, int y) -> "X=" + x + ", Y=" + y;
+```
+
+Auch verschachtelt:
+
+``` java
+case Point(int x, Point(int y, int z)) -> ...
+```
+
+------------------------------------------------------------------------
+
+## 7. null-Case
+
+Java 21 erlaubt explizite Null-Prüfung:
+
+``` java
+case null -> "Null value";
+```
+
+Regeln:
+
+-   Steht **vor** allen Typ-Patterns.
+-   Fehlt `case null`, fängt `default` den Nullfall ab.
+
+------------------------------------------------------------------------
+
+## 8. Guards (`when`)
+
+Bedingte Pattern:
+
+``` java
+case Integer i when i > 0 -> "Positive";
+case Integer i when i == 0 -> "Zero";
+case Integer i -> "Negative";
+```
+
+------------------------------------------------------------------------
+
+## 9. Case-Blöcke mit `yield`
+
+Nur in switch-Expressions erlaubt:
+
+``` java
+case 1 -> {
+    int r = compute();
+    yield r;
+}
+```
+
+------------------------------------------------------------------------
+
+## 10. Exhaustiveness
+
+Eine switch-Expression muss vollständig sein.
+
+Bei sealed classes erkennt der Compiler das automatisch:
+
+``` java
+sealed interface Shape permits Circle, Square, Rectangle {}
+
+switch (shape) {
+    case Circle c -> ...
+    case Square s -> ...
+    case Rectangle r -> ...
+}
+```
+
+Kein `default` nötig.
+
+------------------------------------------------------------------------
+
+# Übersichtstabelle
+
+  Art des Case-Labels   Beispiel                     Seit
+  --------------------- ---------------------------- ------------------
+  Konstante Werte       `case 1:`                    immer
+  Mehrere Werte         `case A, B ->`               Java 12
+  Arrow-Syntax          `case X ->`                  Java 12
+  default               `default ->`                 immer
+  Type Patterns         `case String s ->`           final in Java 21
+  Record Patterns       `case Point(int x, int y)`   final in Java 21
+  null                  `case null ->`               Java 21
+  Guards                `case X when cond`           Java 21
+  yield-Blöcke          `case X -> { yield v; }`     final in Java 14
+
+------------------------------------------------------------------------
+
+# Zusammenfassung
+
+Ein `case` kann in Java 21 Folgendes verarbeiten:
+
+-   Konstante Werte
+-   Mehrere Werte pro Case
+-   Arrow-Labels
+-   default
+-   Type Patterns
+-   Record Patterns
+-   null
+-   Guards mit `when`
+-   Blockarme mit `yield`
+-   Sealed-Class-Exhaustiveness
+
+Damit zählt Java 21 zu den modernsten Pattern-Matching-Sprachen der JVM.
+
