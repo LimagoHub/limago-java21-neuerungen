@@ -48,28 +48,3 @@ Ziel ist ein **praxisnahes Tutorial**, das du lokal ausführen und als Grundlage
 
 - Java Development Kit (**JDK 21**) installiert  
   (frühere Versionen funktionieren für einige Beispiele nicht, da Features erst in Java 21 final wurden)
-- Optional:
-  - Maven oder Gradle als Build-Tool
-  - Git zum Klonen dieses Repositories
-
----
-
-## Projektstruktur
-
-```text
-src/
-  java17/
-    SealedClassesExample.java
-    PatternMatchingInstanceofExample.java
-    RecordsExample.java
-  java18/
-    SimpleHttpClientExample.java
-  java19/
-    VirtualThreadsPreviewExample.java
-  java20/
-    RecordPatternsExample.java
-  java21/
-    VirtualThreadsExample.java
-    PatternMatchingSwitchExample.java
-    SequencedCollectionsExample.java
-README.md
