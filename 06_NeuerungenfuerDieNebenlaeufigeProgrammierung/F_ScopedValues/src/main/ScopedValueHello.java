@@ -25,6 +25,6 @@ public class ScopedValueHello {
     private static void sayHello() {
         // ScopedValue ist hier verfügbar, obwohl es kein Parameter ist
         System.out.println("Hallo " + USER.get());
-        
+
     }
 }
